@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, afterNextRender } from '@angular/core';
 import { form, FormField, min, required } from '@angular/forms/signals';
 import { InsumoSv } from '../../services/insumo-sv';
-import { InsumoIn } from '../../interfaces/insumo-in';
+import { Insumo, InsumoIn } from '../../interfaces/insumo-in';
 import Swal from 'sweetalert2';
 
 
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 export class InsumoComponente {
   private insumoService = inject(InsumoSv)
 
-  listaInsumos : InsumoIn [] = []
+  listaInsumos = signal<Insumo[]>([])
 
   private insumoModelo = signal<InsumoIn>({
     nombre: '',
@@ -33,11 +33,16 @@ export class InsumoComponente {
   })
 
   constructor(){
-    this.mostrar();
+    // Se ejecuta solo en el navegador, evitando llamadas a la API durante el prerender.
+    afterNextRender(() => this.mostrar());
   }
 
   guardar(evento : Event){
     evento.preventDefault();
+
+    if (this.insumoFormulario().invalid()) {
+      return;
+    }
 
     let insumo: InsumoIn ={
       nombre: this.insumoModelo().nombre,
@@ -46,16 +51,25 @@ export class InsumoComponente {
       unidadMedida: this.insumoModelo().unidadMedida,
       stockMinimo: this.insumoModelo().stockMinimo
     }
-    this.insumoService.guardar(insumo)
 
-    Swal.fire({
-      title: "Insumo Registrado",
-      text: "El insumo fue registrado al inventario exitosamente",
-      icon: "success"
+    this.insumoService.guardar(insumo).subscribe({
+      next: () => {
+        Swal.fire({
+          title: "Insumo Registrado",
+          text: "El insumo fue registrado al inventario exitosamente",
+          icon: "success"
+        })
+        this.limpiar();
+        this.mostrar();
+      },
+      error: () => {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.",
+          icon: "error"
+        })
+      }
     })
-
-    this.limpiar();
-    this.mostrar();
   }
   limpiar() {
     this.insumoModelo.set({
@@ -67,7 +81,15 @@ export class InsumoComponente {
     });
   }
   mostrar(){
-    this.listaInsumos = this.insumoService.mostrar();
+    this.insumoService.mostrar().subscribe({
+      next: (insumos) => this.listaInsumos.set(insumos),
+      error: () => {
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo cargar el inventario desde el servidor.",
+          icon: "error"
+        })
+      }
+    })
   }
 }
-

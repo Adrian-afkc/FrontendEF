@@ -85,7 +85,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (insumo of listaInsumos; track $index) {
+        @for (insumo of listaInsumos(); track insumo.id) {
           <tr>
             <td>{{ insumo.nombre }}</td>
             <td>{{ insumo.categoria }}</td>

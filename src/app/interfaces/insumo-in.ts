@@ -5,3 +5,7 @@ export interface InsumoIn {
   unidadMedida: string;
   stockMinimo: number;
 }
+
+export interface Insumo extends InsumoIn {
+  id: number;
+}
