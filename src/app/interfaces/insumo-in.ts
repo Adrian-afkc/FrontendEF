@@ -1,11 +1,17 @@
-export interface InsumoIn {
+export interface InsumoEntrada {
   nombre: string;
-  categoria: string;
   cantidad: number;
-  unidadMedida: string;
   stockMinimo: number;
+  idCategoria: number;
+  idUnidad: number;
 }
 
-export interface Insumo extends InsumoIn {
+export interface Insumo extends InsumoEntrada {
   id: number;
+  categoria: string;
+  unidadMedida: string;
+  fechaRegistro: string | null;
 }
+
+export type EstadoInsumo = 'abastecido' | 'critico';
+export type PrioridadInsumo = 'alta' | 'media';

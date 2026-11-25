@@ -1,0 +1,30 @@
+<section class="kpi-grid">
+  <article class="kpi-card">
+    <div>
+      <p class="kpi-label">Total Insumos Registrados</p>
+      <p class="kpi-value">{{ total() }} <span>alimentos</span></p>
+      <p class="kpi-foot">Inventario de la comunidad</p>
+    </div>
+    <span class="kpi-icon"><i class="bi bi-box-seam"></i></span>
+  </article>
+
+  <article class="kpi-card">
+    <div>
+      <p class="kpi-label">Alimentos Abastecidos</p>
+      <p class="kpi-value">{{ abastecidos() }} <span>alimentos</span></p>
+      <span class="kpi-badge ok"><i class="bi bi-check-circle"></i> Stock suficiente</span>
+    </div>
+    <span class="kpi-icon"><i class="bi bi-check2-circle"></i></span>
+  </article>
+
+  <article class="kpi-card critico">
+    <div>
+      <p class="kpi-label">Alerta: Stock Crítico / Escasez</p>
+      <p class="kpi-value valor-critico">{{ criticos() }} <span>alimentos por agotarse</span></p>
+      <span class="kpi-badge peligro">
+        <i class="bi bi-exclamation-triangle"></i> Requieren reposición
+      </span>
+    </div>
+    <span class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></span>
+  </article>
+</section>

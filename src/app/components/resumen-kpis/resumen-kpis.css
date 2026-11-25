@@ -1,0 +1,97 @@
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.kpi-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.kpi-card.critico {
+  background: #fff8f8;
+  border-color: #fecaca;
+}
+
+.kpi-label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.kpi-value {
+  margin: 10px 0 6px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.kpi-value span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-muted);
+  letter-spacing: 0;
+}
+
+.kpi-value.valor-critico {
+  color: var(--color-danger);
+}
+
+.kpi-foot {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
+.kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kpi-badge.ok {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.kpi-badge.peligro {
+  background: var(--color-danger-soft);
+  color: #b91c1c;
+}
+
+.kpi-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 20px;
+}
+
+.kpi-card.critico .kpi-icon {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+@media (max-width: 900px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

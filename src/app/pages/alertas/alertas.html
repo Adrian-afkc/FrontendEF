@@ -1,0 +1,154 @@
+<section class="pagina-cabecera">
+  <div>
+    <h1 class="page-title">Alertas de Stock Crítico</h1>
+    <p class="page-subtitle">
+      Revisa los faltantes y prioriza la reposición para la próxima jornada.
+    </p>
+  </div>
+  <a routerLink="/inventario" class="btn-outline-app">
+    <i class="bi bi-arrow-left"></i> Volver al inventario
+  </a>
+</section>
+
+@if (error()) {
+  <div class="app-alert">
+    <span><i class="bi bi-exclamation-triangle"></i> {{ error() }}</span>
+    <button type="button" class="btn-outline-app btn-sm-app" (click)="reintentar()">
+      Reintentar
+    </button>
+  </div>
+}
+
+<app-resumen-kpis [total]="total()" [abastecidos]="abastecidos()" [criticos]="criticos().length" />
+
+<div class="alertas-grid">
+  <section class="app-card tabla-card">
+    <header class="tabla-cabecera">
+      <h2>
+        Alimentos por reponer <span>{{ criticos().length }} críticos</span>
+      </h2>
+      <label class="ordenador">
+        Ordenar por:
+        <select [value]="orden()" (change)="cambiarOrden($any($event.target).value)">
+          <option value="escasez">Mayor escasez</option>
+          <option value="nombre">Nombre</option>
+        </select>
+      </label>
+    </header>
+
+    <div class="tabla-scroll">
+      <table class="tabla-app tabla-alertas">
+        <thead>
+          <tr>
+            <th class="celda-check"></th>
+            <th>Insumo / Categoría</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo</th>
+            <th>Falta reponer</th>
+            <th>Prioridad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (insumo of criticos(); track insumo.id) {
+            <tr>
+              <td class="celda-check">
+                <input
+                  type="checkbox"
+                  [checked]="estaSeleccionado(insumo.id)"
+                  (change)="alternar(insumo.id)"
+                  [attr.aria-label]="'Seleccionar ' + insumo.nombre"
+                />
+              </td>
+              <td>
+                <span class="celda-principal">{{ insumo.nombre }}</span>
+                <small class="celda-suave d-block">{{ insumo.categoria }}</small>
+              </td>
+              <td class="celda-stock critico">
+                {{ insumo.cantidad }} {{ insumo.unidadMedida }}
+                <span class="barra-stock">
+                  <span [style.width.%]="porcentaje(insumo)"></span>
+                </span>
+              </td>
+              <td class="celda-suave">{{ insumo.stockMinimo }} {{ insumo.unidadMedida }}</td>
+              <td class="falta-reponer">+{{ falta(insumo) }} {{ insumo.unidadMedida }}</td>
+              <td>
+                <span
+                  class="prioridad"
+                  [class.alta]="prioridad(insumo) === 'alta'"
+                  [class.media]="prioridad(insumo) === 'media'"
+                >
+                  <i class="bi bi-arrow-up"></i>
+                  {{ prioridad(insumo) === 'alta' ? 'Alta' : 'Media' }}
+                </span>
+              </td>
+              <td>
+                <button type="button" class="accion ingreso" (click)="registrarIngreso(insumo)">
+                  <i class="bi bi-box-arrow-in-down"></i> Registrar ingreso
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="tabla-vacia">
+                @if (cargando()) {
+                  Cargando alertas…
+                } @else {
+                  No hay alimentos en estado crítico. ¡Buen trabajo!
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="tabla-pie">
+      <span>{{ totalSeleccionados() }} de {{ criticos().length }} alimentos seleccionados</span>
+      <div class="pie-acciones">
+        <button type="button" class="link-btn" (click)="alternarTodos()">
+          {{ todosSeleccionados() ? 'Quitar selección' : 'Seleccionar todos' }}
+        </button>
+        <span class="pie-nota">Todas las alertas de stock crítico</span>
+      </div>
+    </footer>
+  </section>
+
+  <aside class="alertas-lateral">
+    <section class="app-card reposicion-card">
+      <h2><i class="bi bi-clipboard-check"></i> Lista de reposición</h2>
+      <p class="reposicion-desc">
+        {{ totalSeleccionados() }} alimentos seleccionados para recuperar el stock mínimo.
+      </p>
+
+      <div class="reposicion-totales">
+        <div>
+          <strong>{{ formatear(totalKg()) }}</strong> <span>kg</span>
+          <small>en kilogramos</small>
+        </div>
+        <div>
+          <strong>{{ formatear(totalUnidades()) }}</strong> <span>unidades</span>
+          <small>en unidades</small>
+        </div>
+      </div>
+
+      <button type="button" class="btn-app btn-block" (click)="descargarLista()">
+        <i class="bi bi-download"></i> Descargar lista
+      </button>
+
+      <p class="nota-info">
+        <i class="bi bi-info-circle"></i>
+        Comparte esta lista con el comité para coordinar compras o donaciones.
+      </p>
+    </section>
+
+    <section class="app-card info-card">
+      <h3><i class="bi bi-info-circle"></i> ¿Qué reponer primero?</h3>
+      <p>
+        <strong>Prioridad alta:</strong> queda el 25 % o menos del mínimo. Atiende estos
+        {{ altaPrioridad() }} alimentos primero.
+      </p>
+      <p>Al recibir insumos, registra el ingreso para actualizar las alertas.</p>
+    </section>
+  </aside>
+</div>

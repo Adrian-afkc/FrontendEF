@@ -1,0 +1,42 @@
+<header class="app-header">
+  <div class="header-inner">
+    <a class="brand" routerLink="/inventario">
+      <span class="brand-logo"><i class="bi bi-basket2-fill"></i></span>
+      <span class="brand-text">
+        <strong>Olla Común Sector 10</strong>
+        <small>Gestión de stock e insumos</small>
+      </span>
+    </a>
+
+    @if (simple()) {
+      <span class="header-portal">
+        <i class="bi bi-shield-check"></i> Portal del comité vecinal
+      </span>
+    } @else {
+      <nav class="header-nav">
+        <a routerLink="/inventario" routerLinkActive="activo" class="nav-link-app">
+          <i class="bi bi-box-seam"></i> Inventario de Insumos
+        </a>
+        <a routerLink="/alertas" routerLinkActive="activo" class="nav-link-app">
+          <i class="bi bi-bell"></i> Alertas de Stock
+          @if (criticos() > 0) {
+            <span class="badge-count">{{ criticos() }}</span>
+          }
+        </a>
+      </nav>
+
+      <div class="header-user">
+        @if (usuario(); as u) {
+          <span class="avatar">{{ u.iniciales }}</span>
+          <span class="user-info">
+            <strong>{{ u.nombre }}</strong>
+            <small>{{ u.rol }}</small>
+          </span>
+        }
+        <button type="button" class="logout-btn" (click)="cerrarSesion()">
+          <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+        </button>
+      </div>
+    }
+  </div>
+</header>

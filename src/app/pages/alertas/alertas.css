@@ -1,0 +1,251 @@
+.alertas-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  gap: 18px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.tabla-card {
+  padding: 20px;
+}
+
+.tabla-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.tabla-cabecera h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.tabla-cabecera h2 span {
+  color: var(--color-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.ordenador {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ordenador select {
+  height: 34px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-text);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.celda-check {
+  width: 34px;
+  text-align: center;
+}
+
+.celda-check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.tabla-alertas th,
+.tabla-alertas td {
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.barra-stock {
+  display: block;
+  width: 42px;
+  height: 3px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+.barra-stock span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-danger);
+}
+
+.falta-reponer {
+  color: #374151;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.prioridad {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.prioridad.alta {
+  background: var(--color-danger-soft);
+  color: #b91c1c;
+}
+
+.prioridad.media {
+  background: var(--color-warning-soft);
+  color: #92400e;
+}
+
+.pie-acciones {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pie-nota {
+  color: var(--color-muted);
+}
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.alertas-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reposicion-card {
+  padding: 20px;
+}
+
+.reposicion-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.reposicion-card h2 .bi {
+  color: var(--color-primary);
+}
+
+.reposicion-desc {
+  margin: 0 0 16px;
+  color: var(--color-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.reposicion-totales {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reposicion-totales strong {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.reposicion-totales span {
+  color: var(--color-muted);
+  font-size: 12.5px;
+}
+
+.reposicion-totales small {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.info-card {
+  padding: 18px 20px;
+  background: #f0fdf7;
+  border-color: #bbf7d0;
+}
+
+.info-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.info-card h3 .bi {
+  color: var(--color-primary);
+}
+
+.info-card p {
+  margin: 0 0 8px;
+  color: #374151;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.info-card p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1080px) {
+  .alertas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .alertas-lateral {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .tabla-cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .alertas-lateral {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-pie {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,242 @@
+<section class="pagina-cabecera">
+  <div>
+    <h1 class="page-title">Inventario de Víveres y Alerta de Escasez</h1>
+    <p class="page-subtitle">
+      Registra los alimentos disponibles y mantén a tu comunidad abastecida.
+    </p>
+  </div>
+  <a routerLink="/alertas" class="btn-outline-app">
+    <i class="bi bi-arrow-right"></i> Ver alertas de stock
+  </a>
+</section>
+
+@if (error()) {
+  <div class="app-alert">
+    <span><i class="bi bi-exclamation-triangle"></i> {{ error() }}</span>
+    <button type="button" class="btn-outline-app btn-sm-app" (click)="reintentar()">
+      Reintentar
+    </button>
+  </div>
+}
+
+<app-resumen-kpis [total]="total()" [abastecidos]="abastecidos()" [criticos]="criticos()" />
+
+<div class="inventario-grid">
+  <section class="app-card formulario-card">
+    <header class="card-cabecera">
+      <h2>
+        <i class="bi bi-plus-circle"></i>
+        {{ idEditando() === null ? 'Registrar Nuevo Insumo' : 'Editar Insumo' }}
+      </h2>
+      <p>Añade un alimento y define su stock mínimo.</p>
+    </header>
+
+    <form (submit)="guardar($event)" novalidate>
+      <div class="campo">
+        <label for="nombre" class="form-label-app">Nombre del Alimento</label>
+        <input
+          id="nombre"
+          type="text"
+          class="form-control-app"
+          placeholder="Ej. Arroz, Lentejas, Aceite"
+          [formField]="formulario.nombre"
+        />
+        @if (formulario.nombre().touched() && formulario.nombre().invalid()) {
+          @for (error of formulario.nombre().errors(); track $index) {
+            <span class="mensaje-error">{{ error.message }}</span>
+          }
+        }
+      </div>
+
+      <div class="campo">
+        <label for="categoria" class="form-label-app">Categoría</label>
+        <select id="categoria" class="form-select-app" [formField]="formulario.idCategoria">
+          <option value="" disabled>Selecciona una categoría</option>
+          @for (categoria of categorias(); track categoria.id) {
+            <option [value]="categoria.id">{{ categoria.nombre }}</option>
+          }
+        </select>
+        <p class="ayuda-campo">Abarrotes, Menestras, Verduras y más.</p>
+        @if (formulario.idCategoria().touched() && formulario.idCategoria().invalid()) {
+          @for (error of formulario.idCategoria().errors(); track $index) {
+            <span class="mensaje-error">{{ error.message }}</span>
+          }
+        }
+      </div>
+
+      <div class="campos-fila">
+        <div class="campo">
+          <label for="cantidad" class="form-label-app">Cantidad Actual (kg/unidades)</label>
+          <input
+            id="cantidad"
+            type="number"
+            class="form-control-app"
+            placeholder="Ej. 10"
+            [formField]="formulario.cantidad"
+          />
+          @if (formulario.cantidad().touched() && formulario.cantidad().invalid()) {
+            @for (error of formulario.cantidad().errors(); track $index) {
+              <span class="mensaje-error">{{ error.message }}</span>
+            }
+          }
+        </div>
+
+        <div class="campo">
+          <label for="stockMinimo" class="form-label-app">Alerta Stock Crítico (Mínimo)</label>
+          <input
+            id="stockMinimo"
+            type="number"
+            class="form-control-app"
+            placeholder="Ej. 5"
+            [formField]="formulario.stockMinimo"
+          />
+          @if (formulario.stockMinimo().touched() && formulario.stockMinimo().invalid()) {
+            @for (error of formulario.stockMinimo().errors(); track $index) {
+              <span class="mensaje-error">{{ error.message }}</span>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="unidad" class="form-label-app">Unidad de Medida</label>
+        <select id="unidad" class="form-select-app" [formField]="formulario.idUnidad">
+          <option value="" disabled>Selecciona una unidad</option>
+          @for (unidad of unidades(); track unidad.id) {
+            <option [value]="unidad.id">{{ unidad.nombre }} ({{ unidad.abreviatura }})</option>
+          }
+        </select>
+        @if (formulario.idUnidad().touched() && formulario.idUnidad().invalid()) {
+          @for (error of formulario.idUnidad().errors(); track $index) {
+            <span class="mensaje-error">{{ error.message }}</span>
+          }
+        }
+      </div>
+
+      <p class="nota-info">
+        <i class="bi bi-info-circle"></i>
+        Se mostrará una alerta cuando el stock sea menor al mínimo indicado.
+      </p>
+
+      <button type="submit" class="btn-app btn-block">
+        <i
+          class="bi"
+          [class.bi-plus-lg]="idEditando() === null"
+          [class.bi-check-lg]="idEditando() !== null"
+        ></i>
+        {{ idEditando() === null ? 'Guardar Insumo' : 'Actualizar Insumo' }}
+      </button>
+
+      @if (idEditando() !== null) {
+        <button
+          type="button"
+          class="btn-outline-app btn-block btn-cancelar"
+          (click)="cancelarEdicion()"
+        >
+          Cancelar edición
+        </button>
+      }
+    </form>
+  </section>
+
+  <section class="app-card tabla-card">
+    <header class="tabla-cabecera">
+      <h2>
+        Inventario de insumos <span>{{ filtrados().length }} alimentos</span>
+      </h2>
+      <div class="buscador">
+        <i class="bi bi-search"></i>
+        <input
+          type="search"
+          placeholder="Buscar alimento..."
+          [value]="busqueda()"
+          (input)="actualizarBusqueda($any($event.target).value)"
+        />
+      </div>
+    </header>
+
+    <div class="tabla-scroll">
+      <table class="tabla-app">
+        <thead>
+          <tr>
+            <th>Insumo</th>
+            <th>Categoría</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo</th>
+            <th>Estado / Alerta</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (insumo of visibles(); track insumo.id) {
+            <tr>
+              <td class="celda-principal">{{ insumo.nombre }}</td>
+              <td class="celda-suave">{{ insumo.categoria }}</td>
+              <td class="celda-stock" [class.critico]="insumo.cantidad <= insumo.stockMinimo">
+                {{ insumo.cantidad }} {{ insumo.unidadMedida }}
+              </td>
+              <td class="celda-suave">{{ insumo.stockMinimo }} {{ insumo.unidadMedida }}</td>
+              <td>
+                @if (insumo.cantidad <= insumo.stockMinimo) {
+                  <span class="badge-estado critico">
+                    <i class="bi bi-exclamation-triangle"></i> Stock crítico
+                  </span>
+                } @else {
+                  <span class="badge-estado abastecido">
+                    <i class="bi bi-check-circle"></i> Abastecido
+                  </span>
+                }
+              </td>
+              <td>
+                <div class="acciones-tabla">
+                  <button type="button" class="accion editar" (click)="editar(insumo)">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button type="button" class="accion eliminar" (click)="eliminar(insumo)">
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="tabla-vacia">
+                @if (cargando()) {
+                  Cargando inventario…
+                } @else {
+                  No hay insumos registrados en el inventario.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="tabla-pie">
+      <span>Mostrando {{ desde() }}–{{ hasta() }} de {{ filtrados().length }} insumos</span>
+      <div class="paginacion">
+        <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
+        <button
+          type="button"
+          class="pagina-flecha"
+          [disabled]="pagina() === 1"
+          (click)="cambiarPagina(-1)"
+          aria-label="Página anterior"
+        >
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="pagina-actual">{{ pagina() }}</span>
+        <button
+          type="button"
+          class="pagina-flecha"
+          [disabled]="pagina() === totalPaginas()"
+          (click)="cambiarPagina(1)"
+          aria-label="Página siguiente"
+        >
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </footer>
+  </section>
+</div>
